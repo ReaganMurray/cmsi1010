@@ -12,6 +12,29 @@ class Person:
         # Half or full, we don't care
         return same_mom or same_dad
 
+    def is_parent_of(self, other):
+        """Return if this person is a parent of the other person."""
+        return other is not None and (other.mom is self or other.dad is self)
+
+    def is_child_of(self, other):
+        """Return if this person is a child of the other person."""
+        return other.is_parent_of(self)
+
+    def is_grandparent_of(self, other):
+        """Return if this person is a grandparent of another person."""
+        return other is not None and (
+            (other.mom is not None and self.is_parent_of(other.mom)) or
+            (other.dad is not None and self.is_parent_of(other.dad)))
+
+    def print_family_tree(self, prefix="", level=0):
+        """Print the family tree starting from this person."""
+        indent = "    " * level
+        print(f"{prefix}{self.name} {self.born or '?'}-{self.died or '?'}")
+        if self.mom:
+            self.mom.print_family_tree(f"  {indent}mom: ", level + 1)
+        if self.dad:
+            self.dad.print_family_tree(f"  {indent}dad: ", level + 1)
+
     def __str__(self):
         span = f"({self.born or '?'}-{self.died or '?'})"
         mom = f"{self.mom.name if self.mom is not None else '?'}"
@@ -71,4 +94,8 @@ print(adele.is_sibling_of(joseph))  # should be true
 print(joseph.is_sibling_of(adele))  # should be true
 print(salvatore.is_sibling_of(louise))  # should be false
 
-print(marie)
+print(louise.is_parent_of(mildred))  # should be true
+print(mildred.is_child_of(louise))  # should be false
+
+print(suzanne.is_child_of(ernie))  # should be true
+leo.print_family_tree()
